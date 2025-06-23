@@ -2,21 +2,20 @@ import { NextApiRequest, NextApiHandler, NextApiResponse } from "next";
 import mongoose, { Query } from "mongoose";
 import Counter from "@/models/Counter";
 import Customer from "@/models/Customer";
-import dbConnect from "@/lib/mongoose";
+import { getStoreConnection } from "@/lib/mongoose";
 
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
     if (req.method === "GET") {
+        const {queueLetter, store} = req.query;
         try {
-            await dbConnect();
+            await getStoreConnection(store as string);
         } catch (err) {
             console.error("Database connection error: ", err);
             res.status(500).json({message: "Database could not be connected"});
         }
-
-        const {queueLetter} = req.query;
 
         // check if queue letter is valid
         if (typeof queueLetter !== "string" || !['A', 'B', 'C', 'D'].includes(queueLetter)) {
@@ -33,8 +32,9 @@ export default async function handler(
         }
     }
     else if (req.method === "POST") {
+        const {store} = req.query;
         try {
-            await dbConnect();
+            await getStoreConnection(store as string);
         } catch (err) {
             console.error("Database connection error: ", err);
             res.status(500).json({message: "Database could not be connected"});

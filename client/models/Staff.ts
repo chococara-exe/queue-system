@@ -1,6 +1,6 @@
 import mongoose, { models } from "mongoose";
 
-const StaffSchema = new mongoose.Schema({
+export const StaffSchema = new mongoose.Schema({
     email: String
 })
 

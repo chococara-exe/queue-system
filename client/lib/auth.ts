@@ -6,8 +6,8 @@ import type {
 import type { NextAuthOptions } from "next-auth"
 import { getServerSession } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
-import dbConnect from "./mongoose"
-import Staff from "@/models/Staff"
+import { getStoreConnection } from "./mongoose"
+import { StaffSchema } from "@/models/Staff"
 
 // You'll need to import and pass this
 // to `NextAuth` in `app/api/auth/[...nextauth]/route.ts`
@@ -20,12 +20,20 @@ export const config = {
   ], // rest of your config
 callbacks: {
   async signIn({ user }) {
-    await dbConnect();
-    const staff = await Staff.findOne({email: user.email});
-    if (staff) {
-      return true;
+    console.log(user.email);
+    let conn;
+    try {
+      conn = await getStoreConnection("10gramTrial");
     }
-    return false;
+    catch (err) {
+      console.log(err);
+      return false;
+    }
+    const Staff = conn.model("Staff", StaffSchema);
+    const staff = await Staff.findOne({email: user.email});
+    // console.log(user.email);
+    console.log(staff);
+    return !!staff;
   },
   async jwt({ token, account, profile }) {
     // Persist the OAuth access_token and or the user id to the token right after signin
@@ -36,7 +44,10 @@ callbacks: {
       }
     }
     return token
-  }
+  },
+  // async redirect({ url, baseUrl }) {
+  //   return `${baseUrl}/staff/queueOverview`;
+  // }
 }
 } satisfies NextAuthOptions
 

@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from "react";
 
-function Queue({ queue }: { queue: string }) {
+function Queue({ queue, store }: { queue: string, store: string }) {
     // console.log(queue);
     const [currentNumber, setCurrentNumber] = useState(0);
 
     // const response = await fetch(`api/queue?queue=${queue}`)
 
     useEffect(() => {
-        fetch(`api/queue?queueLetter=${queue}`)
+        fetch(`api/queue?queueLetter=${queue}&store=${store}`)
         .then((res) => res.json())
         .then((data) => setCurrentNumber(data.curQueueNumber))
         .catch((error) => console.error(error))
@@ -23,7 +23,7 @@ function Queue({ queue }: { queue: string }) {
             status: status
         }
 
-        const response  = await fetch("/api/queue", {
+        const response  = await fetch(`/api/queue?store=${store}`, {
             method: "POST",
             headers: {"Content-Type": "application/text"},
             body: JSON.stringify(update)

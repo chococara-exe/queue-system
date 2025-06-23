@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import dbConnect from "@/lib/mongoose";
+import { getStoreConnection } from "@/lib/mongoose";
 import Customer from "@/models/Customer";
 import Counter from "@/models/Counter";
 
@@ -8,9 +8,10 @@ export default async function handler(
     res: NextApiResponse,
 ) {
 
+    const {store} = req.query;
     if (req.method == "POST") {
         try {
-            await dbConnect();
+            await getStoreConnection(store as string);
         } catch (err) {
             console.error("Database connection error: ", err);
             res.status(500).json({message: "Database could not be connected"});

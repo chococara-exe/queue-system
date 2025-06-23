@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 
 function QueuePage() {
     const router = useRouter();
-    const queueParam = router.query.query;
+    const {store, query: queueParam} = router.query;
     const queue = typeof queueParam === "string" ? decodeURIComponent(queueParam) : undefined;
     
     // console.log(JSON.parse(queue));
@@ -17,7 +17,7 @@ function QueuePage() {
     const queueJSON = JSON.parse(queue);
 
     async function handleButton(event: React.MouseEvent<HTMLButtonElement>) {
-        const response = await fetch("/api/cancel", {
+        const response = await fetch(`/api/cancel?store=${store}`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(queueJSON)
@@ -26,7 +26,7 @@ function QueuePage() {
         const data = await response.json();
 
         alert(data.message);
-        router.push("/");
+        router.push(`/?store=${store}`);
     }
 
     return (

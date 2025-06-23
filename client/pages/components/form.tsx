@@ -1,7 +1,7 @@
 import React, {FormEvent, useState} from "react";
 import Router, { useRouter } from "next/router";
 
-const JoinForm = () => {
+function JoinForm({store} : {store: string}) {
 
     const router = useRouter();
 
@@ -33,7 +33,7 @@ const JoinForm = () => {
             babies: babies === ""? null: Number(babies), 
             babychair: babychair === ""? null: Number(babychair)
         }
-        const response = await fetch('/api/join', {
+        const response = await fetch(`/api/join?store=${store}`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(customer)
@@ -43,7 +43,7 @@ const JoinForm = () => {
         console.log(data.data);
 
         if (response.ok && data.queue) {
-            router.push(`/queue?query=${encodeURIComponent(JSON.stringify(data.queue))}`);
+            router.push(`/queue?store=${store}&query=${encodeURIComponent(JSON.stringify(data.queue))}`);
         }
         
     }

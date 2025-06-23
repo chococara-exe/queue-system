@@ -1,11 +1,15 @@
 import React, {Component} from "react";
 import JoinForm from "./components/form";
+import { useRouter } from "next/router";
 
 export default function Homepage() {
+  const router = useRouter();
+  const {store} = router.query;
   return (
     <div>
       <h1>Welcome to the 10 Pots queue system</h1>
-      <JoinForm/>
+      <p>Store: {store}</p>
+      <JoinForm store={store as string}/>
     </div>
   )
 }
