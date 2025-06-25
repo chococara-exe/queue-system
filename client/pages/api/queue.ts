@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiHandler, NextApiResponse } from "next";
 import mongoose, { Query } from "mongoose";
-import Counter from "@/models/Counter";
-import Customer from "@/models/Customer";
+import { CounterSchema } from "@/models/Counter";
+import { CustomerSchema } from "@/models/Customer";
 import { getStoreConnection } from "@/lib/mongoose";
 
 export default async function handler(
@@ -10,17 +10,19 @@ export default async function handler(
 ) {
     if (req.method === "GET") {
         const {queueLetter, store} = req.query;
+        let conn: mongoose.Connection;
         try {
-            await getStoreConnection(store as string);
+            conn = await getStoreConnection(store as string);
         } catch (err) {
             console.error("Database connection error: ", err);
-            res.status(500).json({message: "Database could not be connected"});
+            return res.status(500).json({message: "Database could not be connected"});
         }
 
         // check if queue letter is valid
         if (typeof queueLetter !== "string" || !['A', 'B', 'C', 'D'].includes(queueLetter)) {
             return res.status(404).json({message: "Error: invalid queue"});
         }
+        const Counter = conn.model("Counter", CounterSchema);
         const queue = await Counter.findOne({name: `curQueue${queueLetter}`});
 
         // check if queue found and if queue has value
@@ -33,11 +35,12 @@ export default async function handler(
     }
     else if (req.method === "POST") {
         const {store} = req.query;
+        let conn: mongoose.Connection;
         try {
-            await getStoreConnection(store as string);
+            conn = await getStoreConnection(store as string);
         } catch (err) {
             console.error("Database connection error: ", err);
-            res.status(500).json({message: "Database could not be connected"});
+            return res.status(500).json({message: "Database could not be connected"});
         }
 
         const {queueLetter, status} = JSON.parse(req.body);
@@ -47,6 +50,8 @@ export default async function handler(
             return res.status(404).json({message: "Error: invalid queue"});
         }
 
+        const Counter = conn.model("Counter", CounterSchema);
+
         // find queue from counter collection in database
         let queue = await Counter.findOne({name: `curQueue${queueLetter}`});
 
@@ -54,7 +59,8 @@ export default async function handler(
             queue = await Counter.create({name: `curQueue${queueLetter}`, value: 0});
         }
 
-        let queueNumber = queue.value + 1;
+        let queueNumber = (queue.value ?? 0) + 1;
+        const Customer = conn.model("Customer", CustomerSchema);
         let customer;
         let attempts = 0;
         let maxAttempts = 100;
@@ -75,6 +81,10 @@ export default async function handler(
 
         if (attempts === maxAttempts) {
             return res.status(500).json({message: "Max attempts reached, possible data inconsistency"});
+        }
+
+        if (!customer) {
+            return res.status(500).json({ message: "Customer not found after max attempts" });
         }
 
         // update queue counter to most recent customer

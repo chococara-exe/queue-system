@@ -17,17 +17,3 @@ export async function getStoreConnection(storeName: string) {
     connections[storeName] = conn;
     return conn;
 }
-
-async function dbConnect() {
-    if (isConnected) return;
-    if (!BASE_URL) {
-        throw new Error("MONGODB_URL environment variable is not defined");
-    }
-    mongoose.connect(BASE_URL).then((database) => {
-        console.log("Database connected");
-        isConnected = database.connections[0].readyState === 1;
-        return mongoose;
-    })
-}
-
-export default dbConnect;

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import Customer from "@/models/Customer";
+import {CustomerSchema} from "@/models/Customer";
 import mongoose from "mongoose";
 import { getStoreConnection } from "@/lib/mongoose";
 
@@ -9,15 +9,17 @@ export default async function handler(
 ) {
     if (req.method === "POST") {
         const {store} = req.query;
+        let conn: mongoose.Connection;
         try {
-            await getStoreConnection(store as string);
+            conn = await getStoreConnection(store as string);
         } catch (err) {
             console.error("Database connection error: ", err);
-            res.status(500).json({message: "Database could not be connected"});
+            return res.status(500).json({message: "Database could not be connected"});
         }
 
         const queue = req.body;
 
+        const Customer = conn.model("Customer", CustomerSchema);
         const customer = await Customer.findOne(
             {"queue.letter": queue.letter, "queue.value": queue.value}
         )

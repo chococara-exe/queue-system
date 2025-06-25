@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const CounterSchema = new mongoose.Schema({
+export const CounterSchema = new mongoose.Schema({
     name: String,
     value: Number
 })

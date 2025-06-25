@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getStoreConnection } from "@/lib/mongoose";
-import Customer from "@/models/Customer";
-import Counter from "@/models/Counter";
+import mongoose from "mongoose";
+import {CustomerSchema} from "@/models/Customer";
+import {CounterSchema} from "@/models/Counter";
 
 export default async function handler(
     req: NextApiRequest,
@@ -10,14 +11,16 @@ export default async function handler(
 
     const {store} = req.query;
     if (req.method == "POST") {
+        let conn: mongoose.Connection;
         try {
-            await getStoreConnection(store as string);
+            conn = await getStoreConnection(store as string);
         } catch (err) {
             console.error("Database connection error: ", err);
-            res.status(500).json({message: "Database could not be connected"});
+            return res.status(500).json({message: "Database could not be connected"});
         }
 
         const {name, contact, adults, children, babies, babychair} = req.body;
+        const Counter = conn.model("Counter", CounterSchema);
 
         const totalPax = adults + children + babies;
         let queue, queueLetter;
@@ -57,6 +60,7 @@ export default async function handler(
         const queueNumber = {letter: queueLetter, value: queue.value};
         // console.log(queueNumber);
 
+        const Customer = conn.model("Customer", CustomerSchema);
         const customer = await Customer.create({
             name, 
             queue: queueNumber, 

@@ -1,6 +1,5 @@
 import React from "react";
 import Queue from "./queueControl";
-// import { useSession } from "next-auth/react";
 import { auth } from "@/lib/auth";
 import { GetServerSidePropsContext } from "next";
 import { Session } from "next-auth";

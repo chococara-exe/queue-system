@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const CustomerSchema = new mongoose.Schema({
+export const CustomerSchema = new mongoose.Schema({
     name: String,
     queue: {
         letter: String,
