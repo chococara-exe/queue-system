@@ -171,8 +171,8 @@ function JoinForm({store} : {store: string}) {
                     </label>
                 </div>
             </div>
-            {/* <button type="submit">Submit</button> */}
-            <input type="submit" disabled={isSubmitting}/>
+            <button type="submit" disabled={isSubmitting}>Submit</button>
+            {/* <input type="submit" disabled={isSubmitting}/> */}
         </form>
     )
 }

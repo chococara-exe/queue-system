@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import JoinForm from "./components/form";
+import JoinForm from "../components/form";
 import { useRouter } from "next/router";
 
 export default function Homepage() {
@@ -9,7 +9,9 @@ export default function Homepage() {
     <div>
       <h1>Welcome to the 10 Pots queue system</h1>
       <p>Store: {store}</p>
-      <JoinForm store={store as string}/>
+      <div className="m-auto">
+        <JoinForm store={store as string}/>
+      </div>
     </div>
   )
 }

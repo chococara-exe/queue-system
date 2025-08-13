@@ -15,8 +15,8 @@ function StaffHomepage() {
             onChange={(e) => setStore(e.target.value)}
             >
                 <option value="10gramTrial">10 Gram Trial</option>
-                <option value="10potsTamarind">10 Pots Tamarind</option>
-                <option value="10potsAeon">10 Pots Aeon</option>
+                <option value="10PotsTamarind">10 Pots Tamarind</option>
+                <option value="10PotsAeon">10 Pots Aeon</option>
             </select>
             <StaffLogin store={store}/>
         </div>
