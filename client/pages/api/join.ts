@@ -19,7 +19,7 @@ export default async function handler(
             return res.status(500).json({message: "Database could not be connected"});
         }
 
-        const {name, contact, adults, children, babies, babychair} = req.body;
+        const {name, contact_type, contact, adults, children, babies, babychair} = req.body;
         const Counter = conn.model("Counter", CounterSchema);
 
         const totalPax = adults + children + babies;
@@ -64,6 +64,7 @@ export default async function handler(
         const customer = await Customer.create({
             name, 
             queue: queueNumber, 
+            contact_type,
             contact, 
             adults, 
             children, 

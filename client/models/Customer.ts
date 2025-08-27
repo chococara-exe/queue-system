@@ -6,6 +6,7 @@ export const CustomerSchema = new mongoose.Schema({
         letter: String,
         value: Number,
     },
+    contact_type: String,
     contact: String,
     adults: Number,
     children: Number,

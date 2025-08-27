@@ -20,13 +20,18 @@ function JoinForm({store} : {store: string}) {
     const [children, setChildren] = useState("");
     const [babies, setBabies] = useState("");
     const [babychair, setBabychair] = useState("");
+    const [contactType, setContactType] = useState("");
     const [contact, setContact] = useState("");
+    
+    const [showWhatsappInput, setShowWhatsappInput] = useState(false);
+    const [showEmailInput, setShowEmailInput] = useState(false);
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault()
         setSubmitting(true);
         const customer = {
             name, 
+            contact_type: contactType,
             contact, 
             adults: adults === ""? null: Number(adults), 
             children: children === ""? null: Number(children), 
@@ -51,23 +56,16 @@ function JoinForm({store} : {store: string}) {
     function handleContactSelection(e: FormEvent) {
         setContact("");
         const selection = (e.target as HTMLInputElement).id;
-        const whatsappInput = document.getElementById("whatsappInput");
-        const emailInput = document.getElementById("emailInput");
+
         if (selection === "whatsapp") {
-            if (whatsappInput) {
-                whatsappInput.hidden = false;
-            }
-            if (emailInput) {
-                emailInput.hidden = true;
-            }
+            setContactType("whatsapp");
+            setShowEmailInput(false);
+            setShowWhatsappInput(true);
         }
         else if (selection === "email") {
-            if (whatsappInput) {
-                whatsappInput.hidden = true;
-            }
-            if (emailInput) {
-                emailInput.hidden = false;
-            }
+            setContactType("email");
+            setShowEmailInput(true);
+            setShowWhatsappInput(false);
         }
     }
 
@@ -147,29 +145,33 @@ function JoinForm({store} : {store: string}) {
                     onInput={handleContactSelection}
                     />
                 </label>
-                <div id="whatsappInput" hidden>
-                    <label>
-                        Enter Whatsapp number 
-                        <input 
-                        type="tel" 
-                        value={contact}
-                        required 
-                        onInput={(e) => setContact((e.target as HTMLInputElement).value)}
-                        />
-                    </label>
-                </div>
-                <div id="emailInput" hidden>
-                    <label>
-                        Enter email address 
-                        <input 
-                        type="email" 
-                        id="emailInput"
-                        value={contact}
-                        required
-                        onInput={(e) => setContact((e.target as HTMLInputElement).value)}
-                        />
-                    </label>
-                </div>
+                {showWhatsappInput && (
+                    <div>
+                        <label>
+                            Enter Whatsapp number 
+                            <input 
+                            type="tel" 
+                            value={contact}
+                            required 
+                            onInput={(e) => setContact((e.target as HTMLInputElement).value)}
+                            />
+                        </label>
+                    </div>
+                )}
+                
+                {showEmailInput && (
+                    <div>
+                        <label>
+                            Enter email address 
+                            <input 
+                            type="email" 
+                            value={contact}
+                            required
+                            onInput={(e) => setContact((e.target as HTMLInputElement).value)}
+                            />
+                        </label>
+                    </div>
+                )}
             </div>
             <button type="submit" disabled={isSubmitting}>Submit</button>
             {/* <input type="submit" disabled={isSubmitting}/> */}

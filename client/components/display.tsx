@@ -1,35 +1,18 @@
 import React, {useState, useEffect} from 'react';
+import { QueueData } from '@/types/queue';
+import { fetchCurQueueNumber } from '@/lib/queueUtils';
 
 interface QueueDisplayProps {
     store: string;
 }
 
-interface QueueData {
-    queue: string;
-    currentNumber: number;
-}
-
 export default function QueueDisplay({ store }: QueueDisplayProps) {
     const [queues, setQueues] = useState<QueueData[]>([]);
 
-    async function fetchQueueNumber(store: string) {
+    async function fetchQueueNumbers(store: string) {
         const queueLetters = ['A', 'B', 'C', 'D'];
         Promise.all(
-            queueLetters.map(letter =>
-            fetch(`/api/queue?queueLetter=${letter}&store=${store}`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-            })
-                .then(res => res.json())
-                .then(data => ({
-                queue: letter,
-                currentNumber: data.curQueueNumber,
-                }))
-                .catch(err => ({
-                queue: letter,
-                currentNumber: -1,
-                }))
-            )
+            queueLetters.map(letter => fetchCurQueueNumber(store, letter))
         ).then(setQueues);
     }
 
@@ -50,9 +33,9 @@ export default function QueueDisplay({ store }: QueueDisplayProps) {
         //     .then(data => setQueues(data));
         
         // return () => ws.close();
-        fetchQueueNumber(store);
+        fetchQueueNumbers(store);
 
-        const intervalID = setInterval(() => fetchQueueNumber(store), 5000);
+        const intervalID = setInterval(() => fetchQueueNumbers(store), 5000);
 
         return () => clearInterval(intervalID);
     }, []);
@@ -62,7 +45,7 @@ export default function QueueDisplay({ store }: QueueDisplayProps) {
             {queues.map(queue => (
                 <div key={queue.queue}>
                     <h2>Queue {queue.queue}</h2>
-                    <div className='current-number'>Now Serving: {queue.currentNumber}</div>
+                    <div className='current-number'>Now Serving: {queue.value}</div>
                 </div>
             ))}
         </div>
