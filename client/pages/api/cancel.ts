@@ -31,7 +31,9 @@ export default async function handler(
             {_id: customer._id},
             {status: "cancelled"}
         )
+
         res.status(200).json({message: "Customer successfully removed from queue"});
+        ;
     }
     else {
         res.status(405).json({message: "Method not allowed"});

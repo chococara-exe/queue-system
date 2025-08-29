@@ -95,7 +95,7 @@ function Queue({ queue, store }: { queue: string, store: string }) {
     }
 
     return (
-        <div>
+        <div className="bg-amber-50 m-4 max-w-100 p-8">
             <h1>Queue {queue}</h1>
             <h2>Current number: {currentNumber}</h2>
             <h2>Customer information: </h2>
@@ -113,9 +113,11 @@ function Queue({ queue, store }: { queue: string, store: string }) {
             ) : (
                 <p>Customer information could not be found.</p>
             )}
-            <button value="Completed" onClick={updateStatus}>Completed</button>
-            <button value="Absent" onClick={updateStatus}>Absent</button>
-            <button value="Next" onClick={callNextCustomer}>Call next customer</button>
+            <div className="grid place-content-center">
+                <button value="Completed" onClick={updateStatus}>Completed</button>
+                <button value="Absent" onClick={updateStatus}>Absent</button>
+                <button value="Next" onClick={callNextCustomer}>Call next customer</button>
+            </div>
         </div>
     )
 }

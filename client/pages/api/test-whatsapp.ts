@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         console.log(`Testing WhatsApp to ${phoneNumber} for queue ${queueLetter}${queueNumber}`);
         
-        const result = await callCustomerWhatsapp(phoneNumber, queueLetter, queueNumber);
+        const result = await callCustomerWhatsapp(phoneNumber, "Yi Xin", queueLetter, queueNumber);
         
         res.status(200).json({ 
             success: true, 

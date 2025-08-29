@@ -11,7 +11,7 @@ export async function fetchCurQueueNumber(store: string, queueLetter: string): P
         const data = await response.json();
 
         if (!response.ok) {
-            console.error("Error fetching queues", data.message)
+            console.error("Error fetching queues:", data.message)
             throw new Error(`HTTP error. Status: ${response.status}`)
         };
 
@@ -27,5 +27,27 @@ export async function fetchCurQueueNumber(store: string, queueLetter: string): P
             value: -1,
             customer: null
         }
+    }
+}
+
+export async function resetQueue(store: string, queueLetter: string) {
+    try {
+        const response = await fetch("/api/queue", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                store: store,
+                queueLetter: queueLetter
+            })
+        })
+
+        const data = await response.json();
+        
+        if (!response.ok) {
+            console.error(`Error resetting queue ${queueLetter}:`, data.message);
+            throw new Error(`HTTP error. Status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error(`Error resetting queue ${queueLetter}:`, error);
     }
 }

@@ -41,11 +41,11 @@ export default function QueueDisplay({ store }: QueueDisplayProps) {
     }, []);
     
     return (
-        <div className="queue-display">
+        <div className="grid grid-cols-2 place-content-center gap-3 w-[100%] h-[100%]">
             {queues.map(queue => (
-                <div key={queue.queue}>
-                    <h2>Queue {queue.queue}</h2>
-                    <div className='current-number'>Now Serving: {queue.value}</div>
+                <div className='bg-amber-50 p-10 h-auto' key={queue.queue}>
+                    <h2 className='text-3xl'>Queue {queue.queue}</h2>
+                    <div className='m-4 text-2xl'>Now Serving: <b>{queue.queue}{queue.value}</b></div>
                 </div>
             ))}
         </div>

@@ -57,12 +57,23 @@ function QueuePage() {
     }
 
     return (
-        <div>
-            <h1>Queue Page</h1>
-            <h2>Your queue number is {queueJSON.letter}{queueJSON.value}</h2>
-            <h2>There are currently {customerAhead} tables in front of you</h2>
-            <button onClick={handleCancel}>Cancel Queue</button>
-        </div>
+        customerAhead !== 0 ? (
+            <div>
+                <h1>Thank you for waiting.</h1>
+                <h2>Here is your queue number</h2>
+                <div className="flex bg-gray-800 text-gray-100 rounded-full place-self-center justify-items-center w-20 h-20 m-4 p-auto">
+                    <h1 className="m-auto">{queueJSON.letter}{queueJSON.value}</h1>
+                </div>
+                <h2>There are currently {customerAhead} tables in front of you</h2>
+                <h2>We will contact you when we're almost ready to see you.</h2>
+                <button onClick={handleCancel}>Cancel Queue</button>
+            </div>
+        ) : (
+            <div>
+                <h1>Your queue number <b>{queueJSON.letter}{queueJSON.value}</b> has been called.</h1>
+                <h1>Please make your way to the store entrance and an employee will guide you to your table.</h1>
+            </div>
+        )
     );
 }
 

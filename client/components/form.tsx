@@ -29,10 +29,14 @@ function JoinForm({store} : {store: string}) {
     async function handleSubmit(e: FormEvent) {
         e.preventDefault()
         setSubmitting(true);
+        let formattedContact;
+        if (contact[0] === "0") {
+            formattedContact = "6"+contact;
+        }
         const customer = {
             name, 
             contact_type: contactType,
-            contact, 
+            formattedContact, 
             adults: adults === ""? null: Number(adults), 
             children: children === ""? null: Number(children), 
             babies: babies === ""? null: Number(babies), 
@@ -73,16 +77,17 @@ function JoinForm({store} : {store: string}) {
         <form id="joinForm" onSubmit={handleSubmit}>
             <label>
                 Name 
-                <input 
+            </label>
+            <input 
                 type="text" 
                 value={name} 
                 required 
                 onChange={(e) => setName(e.target.value)}
                 />
-            </label>
             <label>
                 Number of adults 
-                <input 
+            </label>
+            <input 
                 type="number" 
                 pattern="[0-9]"
                 min={1}
@@ -90,10 +95,10 @@ function JoinForm({store} : {store: string}) {
                 required
                 onInput={(e) => setAdults((e.target as HTMLInputElement).value)}
                 />
-            </label>
             <label>
                 Number of children (age 4-10)
-                <input 
+            </label>
+            <input 
                 type="number" 
                 pattern="[0-9]"
                 min={0}
@@ -101,10 +106,10 @@ function JoinForm({store} : {store: string}) {
                 required
                 onInput={(e) => setChildren((e.target as HTMLInputElement).value)}
                 />
-            </label>
             <label>
                 Number of children (age less than 4)
-                <input 
+            </label>
+            <input 
                 type="number" 
                 pattern="[0-9]"
                 min={0}
@@ -112,10 +117,10 @@ function JoinForm({store} : {store: string}) {
                 required
                 onInput={(e) => setBabies((e.target as HTMLInputElement).value)}
                 />
-            </label>
             <label>
                 How many baby chairs do you need?
-                <input 
+            </label>
+            <input 
                 type="number" 
                 pattern="[0-9]"
                 min={0}
@@ -123,7 +128,6 @@ function JoinForm({store} : {store: string}) {
                 required
                 onInput={(e) => setBabychair((e.target as HTMLInputElement).value)}
                 />
-            </label>
             <div>
                 <h2>Contact Option</h2>
                 <label>
@@ -146,34 +150,34 @@ function JoinForm({store} : {store: string}) {
                     />
                 </label>
                 {showWhatsappInput && (
-                    <div>
+                    <div className="grid">
                         <label>
                             Enter Whatsapp number 
-                            <input 
+                        </label>
+                        <input 
                             type="tel" 
                             value={contact}
                             required 
                             onInput={(e) => setContact((e.target as HTMLInputElement).value)}
                             />
-                        </label>
                     </div>
                 )}
                 
                 {showEmailInput && (
-                    <div>
+                    <div className="grid">
                         <label>
                             Enter email address 
-                            <input 
+                        </label>
+                        <input 
                             type="email" 
                             value={contact}
                             required
                             onInput={(e) => setContact((e.target as HTMLInputElement).value)}
                             />
-                        </label>
                     </div>
                 )}
             </div>
-            <button type="submit" disabled={isSubmitting}>Submit</button>
+            <button type="submit" disabled={isSubmitting} className="!m-auto !mt-6">Submit</button>
             {/* <input type="submit" disabled={isSubmitting}/> */}
         </form>
     )

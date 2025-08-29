@@ -71,7 +71,9 @@ export default async function handler(
             babies, 
             babychair
         });
+
         res.status(200).json({message: "Customer added", data: customer, queue: queueNumber});
+        ;
     }
     else {
         res.status(405).json({message: "Method not allowed"});

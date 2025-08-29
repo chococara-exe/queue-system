@@ -19,21 +19,31 @@ export const config = {
     })
   ], // rest of your config
 callbacks: {
-  async signIn({ user }) {
+  async signIn({ user, account, profile, email, credentials }) {
     console.log(user.email);
-    let conn;
     try {
-      conn = await getStoreConnection("10gramTrial");
-    }
-    catch (err) {
-      console.log(err);
+      const callbackUrl = typeof account?.callbackUrl === "string" ? account.callbackUrl : '';
+      const url = new URL(callbackUrl, process.env.NEXTAUTH_URL);
+      const store = url.searchParams.get('store') || '10gramTrial';
+
+      let conn;
+      try {
+        conn = await getStoreConnection(store);
+      }
+      catch (error) {
+        console.error("Database connection error:", error);
+        return false;
+      }
+
+      const Staff = conn.model("Staff", StaffSchema);
+      const staff = await Staff.findOne({email: user.email});
+      // console.log(user.email);
+      console.log(staff);
+      return !!staff;
+    } catch (error) {
+      console.error("Sign-in error:", error);
       return false;
     }
-    const Staff = conn.model("Staff", StaffSchema);
-    const staff = await Staff.findOne({email: user.email});
-    // console.log(user.email);
-    console.log(staff);
-    return !!staff;
   },
   async jwt({ token, account, profile }) {
     // Persist the OAuth access_token and or the user id to the token right after signin
@@ -42,12 +52,39 @@ callbacks: {
       if (profile && (profile as any).id) {
         token.id = (profile as any).id
       }
+
+      try {
+        const callbackUrl = typeof account?.callbackUrl === "string" ? account.callbackUrl : '';
+        if (callbackUrl) {
+          const url = new URL(callbackUrl, process.env.NEXTAUTH_URL);
+          const store = url.searchParams.get('store') || '10gramTrial';
+        }
+      } catch (error) {
+        console.error("JWT callback error:", error);
+        token.store = "10gramTrial";
+      }
+      // const url = new URL(typeof account?.callbackUrl === "string" ? account.callbackUrl : "");
+      // const store = url.searchParams.get('store') || '10gramTrial';
+      // token.store = store;
     }
     return token
   },
   // async redirect({ url, baseUrl }) {
   //   return `${baseUrl}/staff/queueOverview`;
   // }
+  async session({ session, token }) {
+    if (token.accessToken) {
+      (session as any).accessToken = token.accessToken;
+    }
+    if (token.id) {
+      (session as any).id = token.id;
+    }
+    if (token.store) {
+      (session as any).store = token.store;
+    }
+
+    return session;
+  }
 }
 } satisfies NextAuthOptions
 

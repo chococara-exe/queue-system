@@ -37,11 +37,12 @@ export default async function handler(
         else {
             res.status(200).json({message: "Current queue number returned", curQueueNumber: 0, customer: null});
         }
+        ;
     }
     else if (req.method === "POST") {
         
         const {store} = req.body;
-        console.log(store);
+        // console.log(store);
         let conn: mongoose.Connection;
         try {
             conn = await getStoreConnection(store as string);
@@ -152,16 +153,16 @@ export default async function handler(
                 {new: true, upsert: true}
             );
 
-            if (customer.contact_type === "whatsapp" && customer.contact) {
+            if (customer.contact_type === "whatsapp" && customer.contact && customer.name) {
                 try { 
-                    const result = await callCustomerWhatsapp(customer.contact, queueLetter, queueNumber);
+                    const result = await callCustomerWhatsapp(customer.contact, customer.name, queueLetter, queueNumber);
                     console.log("Notification sent to customer:", result);
                 }
                 catch (e) { console.error(e) }
             }
-            else if (customer.contact_type === "email" && customer.contact) {
+            else if (customer.contact_type === "email" && customer.contact && customer.name) {
                 try { 
-                    const result = await callCustomerEmail(customer.contact, customer.name as string, queueLetter, queueNumber)
+                    const result = await callCustomerEmail(customer.contact, customer.name, queueLetter, queueNumber)
                     console.log("Email sent to customer:", result);
                 }
                 catch (e) { console.error(e) }
@@ -169,6 +170,7 @@ export default async function handler(
 
             res.status(200).json({message: "Current queue number returned", curQueueNumber: queueNumber, customer: customer});
         }
+        ;
     }
     else {
         res.status(405).json({message: "Method not allowed"});
