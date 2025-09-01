@@ -6,6 +6,8 @@ import { Session } from "next-auth";
 import Router, { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import QueueSummary from "@/components/queueSummary";
+import { Button } from "@/components/button";
+import { useRef } from "react";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     const session = await auth(context.req, context.res);
@@ -33,6 +35,7 @@ interface QueueOverviewProps {
 
 export default function QueueOverview({ session, store }: QueueOverviewProps) {
     const router = useRouter();
+    const isVisible = useRef(true);
 
     const handleSignOut = () => {
         signOut({
@@ -67,9 +70,9 @@ export default function QueueOverview({ session, store }: QueueOverviewProps) {
                     {`Signed in as ${session.user?.name || session.user?.email} (Store: ${store})`}
                 </h1>
                 <div>
-                    <button onClick={() => router.push(`/staff/display/${store}`)}>Open queue display</button>
-                    <button onClick={() => confirm("Are you sure you want to reset all queues and customers?")? resetAllQueues: null}>Reset all queues</button>
-                    <button onClick={handleSignOut}>Log out</button>
+                    <Button name="Open queue display" className="bg-green-300" onClick={() => router.push(`/staff/display/${store}`)}/>
+                    <Button name="Reset all queues" className="bg-green-300" onClick={() => confirm("Are you sure you want to reset all queues and customers?")? resetAllQueues: null}/>
+                    <Button name="Log out" className="bg-green-300" onClick={handleSignOut}/>
                 </div>
                 <div className="grid gap-4 justify-items-center">
                     <Queue queue="A" store={store}/>

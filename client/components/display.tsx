@@ -26,9 +26,9 @@ export default function QueueDisplay({ store }: QueueDisplayProps) {
         //     .then(data => setQueues(data));
         
         // return () => ws.close();
-        fetchAllQueueNumbers(store, "curQueue").then(setQueues);
+        fetchAllQueueNumbers(store).then(setQueues);
 
-        const intervalID = setInterval(() => fetchAllQueueNumbers(store, "curQueue").then(setQueues), 5000);
+        const intervalID = setInterval(() => fetchAllQueueNumbers(store).then(setQueues), 5000);
 
         return () => clearInterval(intervalID);
     }, []);
@@ -36,9 +36,9 @@ export default function QueueDisplay({ store }: QueueDisplayProps) {
     return (
         <div className="grid grid-cols-2 place-content-center gap-3 w-[100%] h-[100%]">
             {queues.map(queue => (
-                <div className='bg-amber-50 p-10 h-auto' key={queue.queue}>
-                    <h2 className='text-3xl'>Queue {queue.queue}</h2>
-                    <div className='m-4 text-2xl'>Now Serving: <b>{queue.queue}{queue.value}</b></div>
+                <div className='bg-amber-50 p-10 h-auto' key={queue.letter}>
+                    <h2 className='text-3xl'>Queue {queue.letter}</h2>
+                    <div className='m-4 text-2xl'>Now Serving: <b>{queue.letter}{queue.currentNumber}</b></div>
                 </div>
             ))}
         </div>

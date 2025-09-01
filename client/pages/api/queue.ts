@@ -11,45 +11,45 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    if (req.method === "GET") {
-        const {queueLetter, queueType, store} = req.query;
-        // let conn: mongoose.Connection;
-        // try {
-        //     conn = await getStoreConnection(store as string);
-        // } catch (err) {
-        //     console.error("Database connection error: ", err);
-        //     return res.status(500).json({message: "Database could not be connected"});
-        // }
+    // if (req.method === "GET") {
+    //     const {queueLetter, queueType, store} = req.query;
+    //     // let conn: mongoose.Connection;
+    //     // try {
+    //     //     conn = await getStoreConnection(store as string);
+    //     // } catch (err) {
+    //     //     console.error("Database connection error: ", err);
+    //     //     return res.status(500).json({message: "Database could not be connected"});
+    //     // }
 
-        const conn = await getOrCreateConnection(store as string);
+    //     const conn = await getOrCreateConnection(store as string);
 
-        // check if queue letter is valid
-        if (typeof queueLetter !== "string" || !['A', 'B', 'C', 'D'].includes(queueLetter)) {
-            return res.status(404).json({message: "Error: invalid queue"});
-        }
-        const Counter = conn.model("Counter", CounterSchema);
-        const queue = await Counter.findOne({name: `${queueType}${queueLetter}`});
-        // if (queueType === "curQueue") {
-        //     queue = await Counter.findOne({name: `curQueue${queueLetter}`});
-        // } else if (queueType === "queue") {
-        //     queue = await Counter.findOne({name: `queue${queueLetter}`});
-        // }
-        console.log(`${queueType}${queueLetter}`);
+    //     // check if queue letter is valid
+    //     if (typeof queueLetter !== "string" || !['A', 'B', 'C', 'D'].includes(queueLetter)) {
+    //         return res.status(404).json({message: "Error: invalid queue"});
+    //     }
+    //     const Counter = conn.model("Counter", CounterSchema);
+    //     const queue = await Counter.findOne({name: `${queueType}${queueLetter}`});
+    //     // if (queueType === "curQueue") {
+    //     //     queue = await Counter.findOne({name: `curQueue${queueLetter}`});
+    //     // } else if (queueType === "queue") {
+    //     //     queue = await Counter.findOne({name: `queue${queueLetter}`});
+    //     // }
+    //     console.log(`${queueType}${queueLetter}`);
 
-        const Customer = conn.model("Customer", CustomerSchema);
+    //     const Customer = conn.model("Customer", CustomerSchema);
 
-        // check if queue found and if queue has value
-        if (queue && typeof queue.value === "number"){
-            const customer = await Customer.findOne({"queue.letter": queueLetter, "queue.value": queue.value});
-            const nextCustomer = await Customer.findOne({"queue.letter": queueLetter, "queue.value": queue.value+1})
-            res.status(200).json({message: "Current queue number returned", queueNumber: queue.value, customer: customer, nextCustomer: nextCustomer});
-        }
-        else {
-            res.status(200).json({message: "Current queue number returned", queueNumber: 0, customer: null});
-        }
-        ;
-    }
-    else if (req.method === "POST") {
+    //     // check if queue found and if queue has value
+    //     if (queue && typeof queue.value === "number"){
+    //         const customer = await Customer.findOne({"queue.letter": queueLetter, "queue.value": queue.value});
+    //         const nextCustomer = await Customer.findOne({"queue.letter": queueLetter, "queue.value": queue.value+1})
+    //         res.status(200).json({message: "Current queue number returned", queueNumber: queue.value, customer: customer, nextCustomer: nextCustomer});
+    //     }
+    //     else {
+    //         res.status(200).json({message: "Current queue number returned", queueNumber: 0, customer: null});
+    //     }
+    //     ;
+    // }
+    if (req.method === "POST") {
         
         const {store} = req.body;
         // console.log(store);

@@ -16,8 +16,8 @@ function QueuePage() {
 
         async function updateQueueData() {
             try {
-                const queueData = await fetchQueueNumber(store as string, queueJSON.letter, "curQueue");
-                const customersAhead = Math.max(0, queueJSON.value - queueData.value);
+                const queueData = await fetchQueueNumber(store as string, queueJSON.letter);
+                const customersAhead = Math.max(0, queueJSON.value - queueData.currentNumber);
                 setCustomerAhead(customersAhead);
             } catch (error) {
                 console.error("Failed to update queue data:", error)

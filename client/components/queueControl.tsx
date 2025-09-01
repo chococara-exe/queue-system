@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import { CustomerData } from "@/types/customer";
 import { fetchQueueNumber } from "@/lib/queueUtils";
 import { Button } from "./button";
@@ -10,17 +10,22 @@ function Queue({ queue, store }: { queue: string, store: string }) {
     const [customer, setCustomer] = useState<CustomerData | null>(null);
     const [loading, setLoading] = useState(true);
     const [nextCustomer, setNextCustomer] = useState<CustomerData | null>(null)
+    const isVisible = useRef(true);
 
     // const response = await fetch(`api/queue?queue=${queue}`)
     async function fetchQueueData() {
+        if (!isVisible.current) {
+            return;
+        }
+
         try {
-            const curQueueData = await fetchQueueNumber(store, queue, "curQueue");
-            const queueData = await fetchQueueNumber(store, queue, "queue");
+            // const curQueueData = await fetchQueueNumber(store, queue);
+            const queueData = await fetchQueueNumber(store, queue);
             
-            setCurrentNumber(curQueueData.value);
-            setTotalNumber(queueData.value);
-            setCustomer(curQueueData.customer ?? null);
-            setNextCustomer(curQueueData.nextCustomer ?? null);
+            setCurrentNumber(queueData.currentNumber);
+            setTotalNumber(queueData.totalNumber);
+            setCustomer(queueData.customer ?? null);
+            setNextCustomer(queueData.nextCustomer ?? null);
             // console.log("Customer:", customer);
             // console.log("Next Customer:", nextCustomer);
         } catch (error) {
@@ -29,10 +34,15 @@ function Queue({ queue, store }: { queue: string, store: string }) {
     };
 
     useEffect(() => {
+        const handleVisibilityChange = () => {
+            isVisible.current = !document.hidden;
+        }
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         fetchQueueData();
 
-        const intervalID = setInterval(() => fetchQueueData(), 5000);
+        const intervalID = setInterval(() => fetchQueueData(), 15000);
 
         return () => clearInterval(intervalID);
     }, [queue, store])
@@ -56,7 +66,7 @@ function Queue({ queue, store }: { queue: string, store: string }) {
                 status: status
             }
 
-            const response  = await fetch(`/api/queue?store=${store}`, {
+            const response  = await fetch(`/api/queue`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(update)
