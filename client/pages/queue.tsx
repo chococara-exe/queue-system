@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { fetchCurQueueNumber } from "@/lib/queueUtils";
+import { fetchQueueNumber } from "@/lib/queueUtils";
 
 function QueuePage() {
     const router = useRouter();
@@ -16,7 +16,7 @@ function QueuePage() {
 
         async function updateQueueData() {
             try {
-                const queueData = await fetchCurQueueNumber(store as string, queueJSON.letter);
+                const queueData = await fetchQueueNumber(store as string, queueJSON.letter, "curQueue");
                 const customersAhead = Math.max(0, queueJSON.value - queueData.value);
                 setCustomerAhead(customersAhead);
             } catch (error) {
@@ -61,12 +61,12 @@ function QueuePage() {
             <div>
                 <h1>Thank you for waiting.</h1>
                 <h2>Here is your queue number</h2>
-                <div className="flex bg-gray-800 text-gray-100 rounded-full place-self-center justify-items-center w-20 h-20 m-4 p-auto">
-                    <h1 className="m-auto">{queueJSON.letter}{queueJSON.value}</h1>
+                <div className="flex bg-blue-700 text-gray-100 rounded-full place-self-center justify-items-center w-40 h-40 m-4 p-auto">
+                    <h1 className="m-auto text-6xl!">{queueJSON.letter}{queueJSON.value}</h1>
                 </div>
                 <h2>There are currently {customerAhead} tables in front of you</h2>
                 <h2>We will contact you when we're almost ready to see you.</h2>
-                <button onClick={handleCancel}>Cancel Queue</button>
+                <button className="mt-8!" onClick={handleCancel}>Cancel Queue</button>
             </div>
         ) : (
             <div>

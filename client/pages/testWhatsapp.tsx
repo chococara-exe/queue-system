@@ -12,7 +12,7 @@ export default function TestWhatsapp() {
         console.log("Testing WhatsApp...");
         
         try {
-            const response = await fetch('/api/test-whatsapp', {
+            const response = await fetch('/api/whatsapp', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

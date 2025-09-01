@@ -3,6 +3,8 @@ import { getStoreConnection } from "@/lib/mongoose";
 import mongoose from "mongoose";
 import {CustomerSchema} from "@/models/Customer";
 import {CounterSchema} from "@/models/Counter";
+import { joinQueueWhatsapp } from "@/lib/whatsapp";
+import { joinQueueEmail } from "@/lib/email";
 
 export default async function handler(
     req: NextApiRequest,
@@ -71,6 +73,12 @@ export default async function handler(
             babies, 
             babychair
         });
+
+        if (contact_type === "whatsapp") {
+            joinQueueWhatsapp(contact, queueNumber.letter, queueNumber.value as number);
+        } else if (contact_type === "email") {
+            joinQueueEmail(contact, name, queueNumber.letter, queueNumber.value as number);
+        }
 
         res.status(200).json({message: "Customer added", data: customer, queue: queueNumber});
         ;

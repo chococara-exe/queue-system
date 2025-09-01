@@ -1,5 +1,8 @@
 import React, {FormEvent, useState} from "react";
 import Router, { useRouter } from "next/router";
+import { joinQueueWhatsapp } from "@/lib/whatsapp";
+import { joinQueueEmail } from "@/lib/email";
+import { Button } from "./button";
 
 function JoinForm({store} : {store: string}) {
 
@@ -36,7 +39,7 @@ function JoinForm({store} : {store: string}) {
         const customer = {
             name, 
             contact_type: contactType,
-            formattedContact, 
+            contact: formattedContact, 
             adults: adults === ""? null: Number(adults), 
             children: children === ""? null: Number(children), 
             babies: babies === ""? null: Number(babies), 
@@ -52,6 +55,11 @@ function JoinForm({store} : {store: string}) {
         console.log(data.data);
 
         if (response.ok && data.queue) {
+            // if (contactType === "whatsapp") {
+            //     joinQueueWhatsapp(contact, data.queue.letter, data.queue.value);
+            // } else if (contactType === "email") {
+            //     const result = await joinQueueEmail(contact, name, data.queue.letter, data.queue.value);
+            // }
             router.push(`/queue?store=${store}&query=${encodeURIComponent(JSON.stringify(data.queue))}`);
         }
         
@@ -177,7 +185,7 @@ function JoinForm({store} : {store: string}) {
                     </div>
                 )}
             </div>
-            <button type="submit" disabled={isSubmitting} className="!m-auto !mt-6">Submit</button>
+            <Button name="Submit" type="submit" disabled={isSubmitting} className="bg-green-300" />
             {/* <input type="submit" disabled={isSubmitting}/> */}
         </form>
     )

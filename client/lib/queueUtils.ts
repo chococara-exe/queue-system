@@ -1,9 +1,9 @@
 import { CustomerData } from "@/types/customer";
 import { QueueData } from "@/types/queue";
 
-export async function fetchCurQueueNumber(store: string, queueLetter: string): Promise<QueueData> {
+export async function fetchQueueNumber(store: string, queueLetter: string, queueType: string): Promise<QueueData> {
     try {
-        const response = await fetch(`/api/queue?queueLetter=${queueLetter}&store=${store}`, {
+        const response = await fetch(`/api/queue?queueLetter=${queueLetter}&store=${store}&queueType=${queueType}`, {
             method: "GET",
             headers: {"Content-Type": "application/json"},
         })
@@ -17,15 +17,17 @@ export async function fetchCurQueueNumber(store: string, queueLetter: string): P
 
         return {
             queue: queueLetter,
-            value: data.curQueueNumber || 0,
-            customer: data.customer
+            value: data.queueNumber || 0,
+            customer: data.customer,
+            nextCustomer: data.nextCustomer
         } 
     } catch (error) {
         console.error(`Error fetching current queue number for queue ${queueLetter}:`, error);
         return {
             queue: queueLetter,
             value: -1,
-            customer: null
+            customer: null,
+            nextCustomer: null
         }
     }
 }
@@ -37,7 +39,7 @@ export async function resetQueue(store: string, queueLetter: string) {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 store: store,
-                queueLetter: queueLetter
+                queueLetter: queueLetter,
             })
         })
 
@@ -50,4 +52,11 @@ export async function resetQueue(store: string, queueLetter: string) {
     } catch (error) {
         console.error(`Error resetting queue ${queueLetter}:`, error);
     }
+}
+
+export async function fetchAllQueueNumbers(store: string, type: string): Promise<QueueData[]> {
+    const queueLetters = ['A', 'B', 'C', 'D'];
+    return Promise.all(
+        queueLetters.map(letter => fetchQueueNumber(store, letter, type))
+    );
 }

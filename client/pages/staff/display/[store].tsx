@@ -1,33 +1,33 @@
 import React from "react";
 import QueueDisplay from "@/components/display";
-import { GetServerSidePropsContext } from "next";
 import { auth } from "@/lib/auth";
+import { getServerSideProps } from "../queueOverview";
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-    const session = await auth(context.req, context.res);
+// export async function getServerSideProps(context: GetServerSidePropsContext) {
+//     const session = await auth(context.req, context.res);
     
-    if (!session) {
-        const store = context.params?.store as string;
-        return {
-            redirect: {
-                destination: `/staff`,
-                permanent: false
-            }
-        };
-    }
+//     if (!session) {
+//         const store = context.params?.store as string;
+//         return {
+//             redirect: {
+//                 destination: `/staff`,
+//                 permanent: false
+//             }
+//         };
+//     }
 
-    const sessionStore = (session as any)?.store;
-    const urlStore = context.params?.store as string;
-    const store = sessionStore || urlStore;
+//     const sessionStore = (session as any)?.store;
+//     const urlStore = context.params?.store as string;
+//     const store = sessionStore || urlStore;
 
-    if (!store) {
-        return {notFound: true}
-    }
+//     if (!store) {
+//         return {notFound: true}
+//     }
 
-    return {
-        props: { store }
-    }
-}
+//     return {
+//         props: { store }
+//     }
+// }
 
 interface DisplayPageProps {
     store: string;

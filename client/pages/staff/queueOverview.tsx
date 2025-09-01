@@ -1,10 +1,11 @@
 import React from "react";
-import Queue from "./queueControl";
+import Queue from "../../components/queueControl";
 import { auth } from "@/lib/auth";
 import { GetServerSidePropsContext } from "next";
 import { Session } from "next-auth";
 import Router, { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
+import QueueSummary from "@/components/queueSummary";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     const session = await auth(context.req, context.res);
@@ -60,19 +61,22 @@ export default function QueueOverview({ session, store }: QueueOverviewProps) {
     return (
         session? (
         <div>
-            <h1>
-                {`Signed in as ${session.user?.name || session.user?.email} (Store: ${store})`}
-            </h1>
-            <div>
-                <button onClick={() => router.push(`/staff/display/${store}`)}>Open queue display</button>
-                <button onClick={() => confirm("Are you sure you want to reset all queues and customers?")? resetAllQueues: null}>Reset all queues</button>
-                <button onClick={handleSignOut}>Log out</button>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
-                <Queue queue="A" store={store}/>
-                <Queue queue="B" store={store}/>
-                <Queue queue="C" store={store}/>
-                <Queue queue="D" store={store}/>
+            <QueueSummary store={store}/>
+            <div className="ml-40">
+                <h1>
+                    {`Signed in as ${session.user?.name || session.user?.email} (Store: ${store})`}
+                </h1>
+                <div>
+                    <button onClick={() => router.push(`/staff/display/${store}`)}>Open queue display</button>
+                    <button onClick={() => confirm("Are you sure you want to reset all queues and customers?")? resetAllQueues: null}>Reset all queues</button>
+                    <button onClick={handleSignOut}>Log out</button>
+                </div>
+                <div className="grid gap-4 justify-items-center">
+                    <Queue queue="A" store={store}/>
+                    <Queue queue="B" store={store}/>
+                    <Queue queue="C" store={store}/>
+                    <Queue queue="D" store={store}/>
+                </div>
             </div>
         </div>
     ): (

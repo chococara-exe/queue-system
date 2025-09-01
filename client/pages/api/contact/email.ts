@@ -1,134 +1,41 @@
-/**
- *
- * Run:
- *
- */
+// pages/api/test-email.ts
+import { joinQueueEmail } from '../../../lib/email';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { NextApiRequest, NextApiResponse } from "next";
-
-const MailJet = require('node-mailjet')
-
-const mailjet = new MailJet({
-  apiKey: process.env.MAILJET_API_KEY,
-  apiSecret: process.env.MAILJET_API_SECRET
-})
-
-interface MailjetResponse {
-    body: any;
-}
-
-interface MailjetError {
-    statusCode: number;
+interface TestEmailResult {
+    success: boolean;
     message?: string;
-}
-
-export async function sendQueueEmail(
-    recipientEmail: string,
-    recipientName: string,
-    queueLetter: string,
-    queueValue: number
-): Promise<any> {
-    try {
-        const request = mailjet.post('send', { version: 'v3.1' }).request({
-        Messages: [
-            {
-            From: {
-                Email: process.env.SENDER_EMAIL,
-                Name: '10 Pots Restaurant',
-            },
-            To: [
-                {
-                Email: recipientEmail,
-                Name: recipientName,
-                },
-            ],
-            TemplateID: 7264745,
-            TemplateLanguage: true,
-            Subject: 'Your queue number is [[data:queue_letter:""]][[data:queue_value:""]]',
-				"data": {
-                    "queue_letter": queueLetter,
-                    "queue_value": queueValue
-                },
-                "var": {
-                    "queue_letter": queueLetter,
-                    "queue_value": queueValue,
-                    "name": recipientName
-                }
-            }
-        ],
-        })
-
-        const result = await request as MailjetResponse;
-        return result.body;
-    } catch (err) {
-        const error = err as MailjetError;
-        console.error(`Email send error:`, error);
-        throw new Error(`Failed to send email: ${error.statusCode}`);
-    }
-}
-
-export async function callCustomerEmail(
-    recipientEmail: string,
-    recipientName: string,
-    queueLetter: string,
-    queueValue: number
-): Promise<any> {
-    try {
-        const request = mailjet
-        .post('send', { version: 'v3.1' })
-        .request({
-        Messages: [
-            {
-            From: {
-                Email: process.env.SENDER_EMAIL,
-                Name: 'noreply@10potsrestaurant',
-            },
-            To: [
-                {
-                Email: recipientEmail,
-                Name: recipientName,
-                },
-            ],
-            TemplateID: 7263291,
-            TemplateLanguage: true,
-            Subject: 'Your queue number is [[data:queue_letter:""]][[data:queue_value:""]]',
-				"data": {
-                    "queue_letter": queueLetter,
-                    "queue_value": queueValue
-                },
-                "var": {
-                    "queue_letter": queueLetter,
-                    "queue_value": queueValue,
-                    "name": recipientName
-                }
-            },
-        ],
-        })
-
-        const result = await request as MailjetResponse;
-        return result.body;
-    } catch (err) {
-        const error = err as MailjetError;
-        console.error(`Email send error:`, error);
-        throw new Error(`Failed to send email: ${error.statusCode}`);
-    }
+    result?: unknown;
+    error?: string;
 }
 
 export default async function handler(
     req: NextApiRequest,
-    res: NextApiResponse
-) {
-    if (req.method !== "POST") {
-        return res.status(405).json({message: "Method not allowed"});
-    }
-
-    const {recipientEmail, recipientName, queueLetter, queueValue} = req.body;
-
+    res: NextApiResponse<TestEmailResult>
+): Promise<void> {
     try {
-        const result = await sendQueueEmail(recipientEmail, recipientName, queueLetter, queueValue);
-        res.status(200).json({message: "Email sent successfully", result: result})
+        console.log('Testing email with environment variables:');
+        console.log('MAILJET_API_KEY:', process.env.MAILJET_API_KEY ? 'Present' : 'Missing');
+        console.log('MAILJET_API_SECRET:', process.env.MAILJET_API_SECRET ? 'Present' : 'Missing');  
+        console.log('SENDER_EMAIL:', process.env.SENDER_EMAIL);
+
+        const result = await joinQueueEmail(
+            'yixinchong3010@gmail.com', // Send to yourself
+            'Test User',
+            'A',
+            1
+        );
+        
+        res.json({ 
+            success: true, 
+            message: 'Test email sent!',
+            result 
+        });
     } catch (error) {
-        console.error("API email error:", error);
-        res.status(500).json({message: "Failed to send email"})
+        console.error('Test email failed:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: typeof error === 'object' && error !== null && 'message' in error ? (error as { message: string }).message : String(error)
+        });
     }
 }

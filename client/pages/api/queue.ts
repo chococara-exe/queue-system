@@ -3,39 +3,49 @@ import mongoose, { Query } from "mongoose";
 import { CounterSchema } from "@/models/Counter";
 import { CustomerSchema } from "@/models/Customer";
 import { getStoreConnection } from "@/lib/mongoose";
-import { callCustomerWhatsapp } from "./contact/whatsapp";
-import { callCustomerEmail } from "./contact/email";
+import { callCustomerWhatsapp } from "../../lib/whatsapp";
+import { callCustomerEmail } from "../../lib/email";
+import { getOrCreateConnection } from "@/lib/connectionManager";
 
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
     if (req.method === "GET") {
-        const {queueLetter, store} = req.query;
-        let conn: mongoose.Connection;
-        try {
-            conn = await getStoreConnection(store as string);
-        } catch (err) {
-            console.error("Database connection error: ", err);
-            return res.status(500).json({message: "Database could not be connected"});
-        }
+        const {queueLetter, queueType, store} = req.query;
+        // let conn: mongoose.Connection;
+        // try {
+        //     conn = await getStoreConnection(store as string);
+        // } catch (err) {
+        //     console.error("Database connection error: ", err);
+        //     return res.status(500).json({message: "Database could not be connected"});
+        // }
+
+        const conn = await getOrCreateConnection(store as string);
 
         // check if queue letter is valid
         if (typeof queueLetter !== "string" || !['A', 'B', 'C', 'D'].includes(queueLetter)) {
             return res.status(404).json({message: "Error: invalid queue"});
         }
         const Counter = conn.model("Counter", CounterSchema);
-        const queue = await Counter.findOne({name: `curQueue${queueLetter}`});
+        const queue = await Counter.findOne({name: `${queueType}${queueLetter}`});
+        // if (queueType === "curQueue") {
+        //     queue = await Counter.findOne({name: `curQueue${queueLetter}`});
+        // } else if (queueType === "queue") {
+        //     queue = await Counter.findOne({name: `queue${queueLetter}`});
+        // }
+        console.log(`${queueType}${queueLetter}`);
 
         const Customer = conn.model("Customer", CustomerSchema);
 
         // check if queue found and if queue has value
         if (queue && typeof queue.value === "number"){
             const customer = await Customer.findOne({"queue.letter": queueLetter, "queue.value": queue.value});
-            res.status(200).json({message: "Current queue number returned", curQueueNumber: queue.value, customer: customer});
+            const nextCustomer = await Customer.findOne({"queue.letter": queueLetter, "queue.value": queue.value+1})
+            res.status(200).json({message: "Current queue number returned", queueNumber: queue.value, customer: customer, nextCustomer: nextCustomer});
         }
         else {
-            res.status(200).json({message: "Current queue number returned", curQueueNumber: 0, customer: null});
+            res.status(200).json({message: "Current queue number returned", queueNumber: 0, customer: null});
         }
         ;
     }
@@ -43,13 +53,15 @@ export default async function handler(
         
         const {store} = req.body;
         // console.log(store);
-        let conn: mongoose.Connection;
-        try {
-            conn = await getStoreConnection(store as string);
-        } catch (err) {
-            console.error("Database connection error: ", err);
-            return res.status(500).json({message: "Database could not be connected"});
-        }
+        // let conn: mongoose.Connection;
+        // try {
+        //     conn = await getStoreConnection(store as string);
+        // } catch (err) {
+        //     console.error("Database connection error: ", err);
+        //     return res.status(500).json({message: "Database could not be connected"});
+        // }
+
+        const conn = await getOrCreateConnection(store as string);
 
         // console.log("=== DATABASE CONNECTION DEBUG ===");
         // console.log("Database name:", conn.name);

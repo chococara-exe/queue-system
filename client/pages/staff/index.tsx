@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import Queue from "./queueControl";
+import Queue from "../../components/queueControl";
 import StaffLogin from "./login";
 
 function StaffHomepage() {

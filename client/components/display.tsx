@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { QueueData } from '@/types/queue';
-import { fetchCurQueueNumber } from '@/lib/queueUtils';
+import { fetchAllQueueNumbers } from '@/lib/queueUtils';
 
 interface QueueDisplayProps {
     store: string;
@@ -8,13 +8,6 @@ interface QueueDisplayProps {
 
 export default function QueueDisplay({ store }: QueueDisplayProps) {
     const [queues, setQueues] = useState<QueueData[]>([]);
-
-    async function fetchQueueNumbers(store: string) {
-        const queueLetters = ['A', 'B', 'C', 'D'];
-        Promise.all(
-            queueLetters.map(letter => fetchCurQueueNumber(store, letter))
-        ).then(setQueues);
-    }
 
     useEffect(() => {
         // const ws = new WebSocket(`ws://localhost:3001/${store}`);
@@ -33,9 +26,9 @@ export default function QueueDisplay({ store }: QueueDisplayProps) {
         //     .then(data => setQueues(data));
         
         // return () => ws.close();
-        fetchQueueNumbers(store);
+        fetchAllQueueNumbers(store, "curQueue").then(setQueues);
 
-        const intervalID = setInterval(() => fetchQueueNumbers(store), 5000);
+        const intervalID = setInterval(() => fetchAllQueueNumbers(store, "curQueue").then(setQueues), 5000);
 
         return () => clearInterval(intervalID);
     }, []);
