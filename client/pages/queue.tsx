@@ -2,6 +2,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { fetchQueueNumber } from "@/lib/queueUtils";
+import { Button } from "@/components/button";
 
 function QueuePage() {
     const router = useRouter();
@@ -66,7 +67,7 @@ function QueuePage() {
                 </div>
                 <h2>There are currently {customerAhead} tables in front of you</h2>
                 <h2>We will contact you when we're almost ready to see you.</h2>
-                <button className="mt-8!" onClick={handleCancel}>Cancel Queue</button>
+                <Button name="Cancel Queue" className="mt-8 bg-lime-300" onClick={handleCancel}/>
             </div>
         ) : (
             <div>

@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import {CustomerSchema} from "@/models/Customer";
 import mongoose from "mongoose";
 import { getStoreConnection } from "@/lib/mongoose";
+import { getOrCreateConnection } from "@/lib/connectionManager";
 
 export default async function handler(
     req: NextApiRequest,
@@ -11,7 +12,7 @@ export default async function handler(
         const {store} = req.query;
         let conn: mongoose.Connection;
         try {
-            conn = await getStoreConnection(store as string);
+            conn = await getOrCreateConnection(store as string);
         } catch (err) {
             console.error("Database connection error: ", err);
             return res.status(500).json({message: "Database could not be connected"});

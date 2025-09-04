@@ -5,6 +5,7 @@ import {CustomerSchema} from "@/models/Customer";
 import {CounterSchema} from "@/models/Counter";
 import { joinQueueWhatsapp } from "@/lib/whatsapp";
 import { joinQueueEmail } from "@/lib/email";
+import { getOrCreateConnection } from "@/lib/connectionManager";
 
 export default async function handler(
     req: NextApiRequest,
@@ -15,7 +16,7 @@ export default async function handler(
     if (req.method == "POST") {
         let conn: mongoose.Connection;
         try {
-            conn = await getStoreConnection(store as string);
+            conn = await getOrCreateConnection(store as string);
         } catch (err) {
             console.error("Database connection error: ", err);
             return res.status(500).json({message: "Database could not be connected"});

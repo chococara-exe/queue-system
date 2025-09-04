@@ -8,6 +8,7 @@ import { getServerSession } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
 import { getStoreConnection } from "./mongoose"
 import { StaffSchema } from "@/models/Staff"
+import { getOrCreateConnection } from "./connectionManager"
 
 // You'll need to import and pass this
 // to `NextAuth` in `app/api/auth/[...nextauth]/route.ts`
@@ -28,7 +29,7 @@ callbacks: {
 
       let conn;
       try {
-        conn = await getStoreConnection(store);
+        conn = await getOrCreateConnection(store);
       }
       catch (error) {
         console.error("Database connection error:", error);

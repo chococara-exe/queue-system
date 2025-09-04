@@ -3,7 +3,7 @@ import { dataCache } from '@/lib/dataCache';
 
 // ✅ Add request debouncing
 const lastRequestTime = new Map<string, number>();
-const DEBOUNCE_TIME = 10000; // 1 second
+const DEBOUNCE_TIME = 10000; // 10 second
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {

@@ -71,7 +71,11 @@ export default function QueueOverview({ session, store }: QueueOverviewProps) {
                 </h1>
                 <div>
                     <Button name="Open queue display" className="bg-green-300" onClick={() => router.push(`/staff/display/${store}`)}/>
-                    <Button name="Reset all queues" className="bg-green-300" onClick={() => confirm("Are you sure you want to reset all queues and customers?")? resetAllQueues: null}/>
+                    <Button
+                        name="Reset all queues"
+                        className="bg-green-300"
+                        onClick={(event) => confirm("Are you sure you want to reset all queues and customers?") ? resetAllQueues(event) : null}
+                    />
                     <Button name="Log out" className="bg-green-300" onClick={handleSignOut}/>
                 </div>
                 <div className="grid gap-4 justify-items-center">
@@ -86,7 +90,7 @@ export default function QueueOverview({ session, store }: QueueOverviewProps) {
         <div>
             <h1>Not signed in</h1>
             <p>Please go to the login page</p>
-            <button onClick={() => router.push("/staff")}>Go to login</button>
+            <Button name="Go to login" onClick={() => router.push("/staff")}/>
         </div>
     ))
 }

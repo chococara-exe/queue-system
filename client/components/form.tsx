@@ -32,7 +32,7 @@ function JoinForm({store} : {store: string}) {
     async function handleSubmit(e: FormEvent) {
         e.preventDefault()
         setSubmitting(true);
-        let formattedContact;
+        let formattedContact = contact;
         if (contact[0] === "0") {
             formattedContact = "6"+contact;
         }
@@ -185,7 +185,7 @@ function JoinForm({store} : {store: string}) {
                     </div>
                 )}
             </div>
-            <Button name="Submit" type="submit" disabled={isSubmitting} className="bg-green-300" />
+            <Button name="Submit" type="submit" disabled={isSubmitting} className="bg-lime-600 ml-auto mr-auto" />
             {/* <input type="submit" disabled={isSubmitting}/> */}
         </form>
     )
